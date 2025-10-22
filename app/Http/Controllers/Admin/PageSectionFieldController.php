@@ -2,60 +2,109 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use Illuminate\View\View;
 use App\Models\PageSection;
-use App\Models\PageSectionField;
 use Illuminate\Http\Request;
+use App\Models\PageSectionField;
+use App\Http\Controllers\Controller;
 
 class PageSectionFieldController extends Controller
 {
-    public function index(PageSection $section)
+    /**
+     * Display a listing of the fields for a section.
+     */
+    public function index(int $section_id): View
     {
-        $fields = $section->fields()->paginate(10);
+        $section = PageSection::findOrFail($section_id);
+        $fields = $section->fields()->latest()->paginate(10);
+
         return view('admin.page_section_fields.index', compact('section', 'fields'));
     }
 
-    public function create(PageSection $section)
+    /**
+     * Show the form for creating a new field.
+     */
+    public function create(int $section_id): View
     {
+        $section = PageSection::findOrFail($section_id);
         return view('admin.page_section_fields.create', compact('section'));
     }
 
-    public function store(Request $request, PageSection $section)
+    /**
+     * Store a newly created field in storage.
+     */
+    public function store(Request $request, int $section_id)
     {
-        $data = $request->validate([
-            'field_name' => 'required|string|max:255',
-            'field_label' => 'nullable|string|max:255',
-            'field_type' => 'required|in:text,textarea,file,link,video,image',
-            'field_value' => 'nullable|string',
-            'sort_order' => 'integer|min:0'
+        $section = PageSection::findOrFail($section_id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'type' => 'required|in:file,video,image,text,textarea,link',
+            'value' => 'nullable|string',
         ]);
 
-        $section->fields()->create($data);
-        return redirect()->route('admin.sections.fields.index', $section)->with('success', 'Field created successfully!');
+        $field = new PageSectionField();
+        $field->page_section_id = $section->id;
+        $field->name = $request->name;
+        $field->label = $request->label;
+        $field->type = $request->type;
+        $field->value = $request->value;
+        $field->save();
+
+        return redirect()
+            ->route('admin.sections.fields.index', $section->id)
+            ->with('success', 'Field created successfully.');
     }
 
-    public function edit(PageSectionField $field)
+    /**
+     * Show the form for editing the specified field.
+     */
+    public function edit(int $id): View
     {
-        return view('admin.page_section_fields.edit', compact('field'));
+        $field = PageSectionField::findOrFail($id);
+        $section = $field->section;
+
+        return view('admin.page_section_fields.edit', compact('section', 'field'));
     }
 
-    public function update(Request $request, PageSectionField $field)
+    /**
+     * Update the specified field in storage.
+     */
+    public function update(Request $request, int $id)
     {
-        $data = $request->validate([
-            'field_name' => 'required|string|max:255',
-            'field_label' => 'nullable|string|max:255',
-            'field_type' => 'required|in:text,textarea,file,link,video,image',
-            'field_value' => 'nullable|string',
-            'sort_order' => 'integer|min:0'
+        $field = PageSectionField::findOrFail($id);
+        $section = $field->section;
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'type' => 'required|in:file,video,image,text,textarea,link',
+            'value' => 'nullable|string',
         ]);
 
-        $field->update($data);
-        return back()->with('success', 'Field updated successfully!');
+        $field->name = $request->name;
+        $field->label = $request->label;
+        $field->type = $request->type;
+        $field->value = $request->value;
+        $field->save();
+
+        return redirect()
+            ->route('admin.sections.fields.index', $section->id)
+            ->with('success', 'Field updated successfully.');
     }
 
-    public function destroy(PageSectionField $field)
+    /**
+     * Remove the specified field from storage.
+     */
+    public function destroy(int $id)
     {
+        $field = PageSectionField::findOrFail($id);
+        $section_id = $field->page_section_id;
         $field->delete();
-        return back()->with('success', 'Field deleted successfully!');
+
+        return redirect()
+            ->route('admin.sections.fields.index', $section_id)
+            ->with('success', 'Field deleted successfully.');
     }
 }

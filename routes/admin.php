@@ -58,9 +58,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/sections/{section_id}/fields', [PageSectionFieldController::class, 'index'])->name('admin.sections.fields.index');
         Route::get('/sections/{section_id}/fields/create', [PageSectionFieldController::class, 'create'])->name('admin.sections.fields.create');
         Route::post('/sections/{section_id}/fields/store', [PageSectionFieldController::class, 'store'])->name('admin.sections.fields.store');
-        Route::get('/fields/{id}/edit', [PageSectionFieldController::class, 'edit'])->name('admin.fields.edit');
-        Route::put('/fields/{id}/update', [PageSectionFieldController::class, 'update'])->name('admin.fields.update');
-        Route::delete('/fields/{id}/delete', [PageSectionFieldController::class, 'destroy'])->name('admin.fields.destroy');
+        Route::get('/fields/{id}/edit', [PageSectionFieldController::class, 'edit'])->name('admin.sections.fields.edit');
+        Route::put('/fields/{id}/update', [PageSectionFieldController::class, 'update'])->name('admin.sections.fields.update');
+        Route::delete('/fields/{id}/delete', [PageSectionFieldController::class, 'destroy'])->name('admin.sections.fields.destroy');
 
     });
 });
