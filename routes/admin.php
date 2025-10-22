@@ -37,7 +37,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::put('/pages/{id}/update', [PageController::class, 'update'])->name('admin.pages.update');
         Route::delete('/pages/{id}/delete', [PageController::class, 'destroy'])->name('admin.pages.destroy');
 
-
         /*
         |--------------------------------------------------------------------------
         | Page Sections Routes
@@ -46,9 +45,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/pages/{page_id}/sections', [PageSectionController::class, 'index'])->name('admin.pages.sections.index');
         Route::get('/pages/{page_id}/sections/create', [PageSectionController::class, 'create'])->name('admin.pages.sections.create');
         Route::post('/pages/{page_id}/sections/store', [PageSectionController::class, 'store'])->name('admin.pages.sections.store');
-        Route::get('/sections/{id}/edit', [PageSectionController::class, 'edit'])->name('admin.sections.edit');
-        Route::put('/sections/{id}/update', [PageSectionController::class, 'update'])->name('admin.sections.update');
-        Route::delete('/sections/{id}/delete', [PageSectionController::class, 'destroy'])->name('admin.sections.destroy');
+        Route::get('/sections/{id}/edit', [PageSectionController::class, 'edit'])->name('admin.pages.sections.edit');
+        Route::put('/sections/{id}/update', [PageSectionController::class, 'update'])->name('admin.pages.sections.update');
+        Route::delete('/sections/{id}/delete', [PageSectionController::class, 'destroy'])->name('admin.pages.sections.destroy');
 
 
         /*

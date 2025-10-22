@@ -2,62 +2,103 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Page;
+use Illuminate\View\View;
 use App\Models\PageSection;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class PageSectionController extends Controller
 {
-    public function index(Page $page)
+    /**
+     * Display a listing of the sections for a page.
+     */
+    public function index(int $page_id): View
     {
-        $sections = $page->sections()->paginate(10);
+        $page = Page::findOrFail($page_id);
+        $sections = $page->sections()->latest()->paginate(10);
         return view('admin.page_sections.index', compact('page', 'sections'));
     }
 
-    public function create(Page $page)
+    /**
+     * Show the form for creating a new section.
+     */
+    public function create(int $page_id): View
     {
+        $page = Page::findOrFail($page_id);
         return view('admin.page_sections.create', compact('page'));
     }
 
-    public function store(Request $request, Page $page)
+    /**
+     * Store a newly created section in storage.
+     */
+    public function store(Request $request, int $page_id)
     {
-        $data = $request->validate([
+        $page = Page::findOrFail($page_id);
+
+        $request->validate([
             'name' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
-            'sort_order' => 'integer|min:0',
-            'background_type' => 'in:image,video,color,none',
-            'background_value' => 'nullable|string',
-            'visible' => 'boolean'
+            'type' => 'required|in:file,text,textarea,link',
         ]);
 
-        $page->sections()->create($data);
-        return redirect()->route('admin.pages.sections.index', $page)->with('success', 'Section added successfully!');
+        $section = new PageSection();
+        $section->page_id = $page->id;
+        $section->name = $request->name;
+        $section->label = $request->label;
+        $section->type = $request->type;
+        $section->save();
+
+        return redirect()
+            ->route('admin.pages.sections.index', $page->id)
+            ->with('success', 'Section created successfully.');
     }
 
-    public function edit(PageSection $section)
+    /**
+     * Show the form for editing the specified section.
+     */
+    public function edit(int $id): View
     {
-        return view('admin.page_sections.edit', compact('section'));
+        $section = PageSection::findOrFail($id);
+        $page = $section->page;
+        return view('admin.page_sections.edit', compact('page', 'section'));
     }
 
-    public function update(Request $request, PageSection $section)
+    /**
+     * Update the specified section in storage.
+     */
+    public function update(Request $request, int $id)
     {
-        $data = $request->validate([
+        $section = PageSection::findOrFail($id);
+        $page = $section->page;
+
+        $request->validate([
             'name' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
-            'sort_order' => 'integer|min:0',
-            'background_type' => 'in:image,video,color,none',
-            'background_value' => 'nullable|string',
-            'visible' => 'boolean'
+            'type' => 'required|in:file,text,textarea,link',
         ]);
 
-        $section->update($data);
-        return back()->with('success', 'Section updated successfully!');
+        $section->name = $request->name;
+        $section->label = $request->label;
+        $section->type = $request->type;
+        $section->save();
+
+        return redirect()
+            ->route('admin.pages.sections.index', $page->id)
+            ->with('success', 'Section updated successfully.');
     }
 
-    public function destroy(PageSection $section)
+    /**
+     * Remove the specified section from storage.
+     */
+    public function destroy(int $id)
     {
+        $section = PageSection::findOrFail($id);
+        $page_id = $section->page_id;
         $section->delete();
-        return back()->with('success', 'Section deleted successfully!');
+
+        return redirect()
+            ->route('admin.pages.sections.index', $page_id)
+            ->with('success', 'Section deleted successfully.');
     }
 }

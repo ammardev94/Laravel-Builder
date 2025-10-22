@@ -75,7 +75,10 @@
                 <i class="fa fa-save"></i>
                 Save
             </button>
-            <a href="{{ route('admin.pages.index') }}" class="btn btn-default"><i class="fas fa-times-circle"></i> Cancel</a>
+            <a href="{{ route('admin.pages.index') }}" class="btn btn-default">
+              <i class="fas fa-times-circle"></i> 
+              Cancel
+            </a>
         </div>
       </form>
     </div>
