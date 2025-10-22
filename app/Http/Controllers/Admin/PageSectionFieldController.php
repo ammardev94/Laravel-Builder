@@ -7,6 +7,7 @@ use App\Models\PageSection;
 use Illuminate\Http\Request;
 use App\Models\PageSectionField;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PageSectionFieldController extends Controller
 {
@@ -38,18 +39,33 @@ class PageSectionFieldController extends Controller
         $section = PageSection::findOrFail($section_id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'label' => 'nullable|string|max:255',
-            'type' => 'required|in:file,video,image,text,textarea,link',
-            'value' => 'nullable|string',
+            'field_name' => 'required|string|max:255',
+            'field_label' => 'nullable|string|max:255',
+            'field_type' => 'required|in:file,video,image,text,textarea,link',
+            'field_value' => 'nullable|string',
+            'value_file' => 'nullable|file|max:10240',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         $field = new PageSectionField();
         $field->page_section_id = $section->id;
-        $field->name = $request->name;
-        $field->label = $request->label;
-        $field->type = $request->type;
-        $field->value = $request->value;
+        $field->field_name = $request->field_name;
+        $field->field_label = $request->field_label;
+        $field->field_type = $request->field_type;
+        $field->sort_order = $request->sort_order ?? 0;
+
+        if (in_array($request->field_type, ['file', 'image', 'video'])) {
+            if ($request->hasFile('value_file')) {
+                $file = $request->file('value_file');
+                $path = $file->store('page_fields', 'public');
+                $field->field_value = $path;
+            } else {
+                $field->field_value = null;
+            }
+        } else {
+            $field->field_value = $request->field_value;
+        }
+
         $field->save();
 
         return redirect()
@@ -74,19 +90,36 @@ class PageSectionFieldController extends Controller
     public function update(Request $request, int $id)
     {
         $field = PageSectionField::findOrFail($id);
-        $section = $field->section;
+        $section = PageSection::findOrFail($field->page_section_id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'label' => 'nullable|string|max:255',
-            'type' => 'required|in:file,video,image,text,textarea,link',
-            'value' => 'nullable|string',
+            'field_name'  => 'required|string|max:255',
+            'field_label' => 'nullable|string|max:255',
+            'field_type'  => 'required|in:file,video,image,text,textarea,link',
+            'field_value' => 'nullable',
+            'sort_order'  => 'nullable|integer',
         ]);
 
-        $field->name = $request->name;
-        $field->label = $request->label;
-        $field->type = $request->type;
-        $field->value = $request->value;
+        $field->page_section_id = $section->id;
+        $field->field_name = $request->field_name;
+        $field->field_label = $request->field_label;
+        $field->field_type = $request->field_type;
+        $field->sort_order = $request->sort_order ?? 0;
+
+        if (in_array($request->field_type, ['file', 'image', 'video'])) {
+            if ($request->hasFile('value_file')) {
+                if ($field->field_value && Storage::disk('public')->exists($field->field_value)) {
+                    Storage::disk('public')->delete($field->field_value);
+                }
+
+                $file = $request->file('value_file');
+                $path = $file->store('page_fields', 'public');
+                $field->field_value = $path;
+            }
+        } else {
+            $field->field_value = $request->field_value;
+        }
+
         $field->save();
 
         return redirect()
@@ -101,6 +134,11 @@ class PageSectionFieldController extends Controller
     {
         $field = PageSectionField::findOrFail($id);
         $section_id = $field->page_section_id;
+
+        if ($field->field_value && Storage::disk('public')->exists($field->field_value)) {
+            Storage::disk('public')->delete($field->field_value);
+        }
+
         $field->delete();
 
         return redirect()
