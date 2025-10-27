@@ -1,6 +1,6 @@
-# LLCF Laravel Project
+# Laravel-Builder Project
 
-Welcome to the LLCF Laravel-based project. This guide will walk you through the steps required to set up and run the application locally.
+Welcome to the Laravel-Builder project. This guide will walk you through the steps required to set up and run the application locally.
 
 ---
 
@@ -22,7 +22,7 @@ Ensure the following software is installed on your system:
 
 ```bash
 git clone https://your-repo-url.git
-cd llcf
+cd laravel-builder
 ```
 
 ### 2. Install Backend Dependencies
