@@ -17,7 +17,7 @@ class PageSectionFieldController extends Controller
     public function index(int $section_id): View
     {
         $section = PageSection::findOrFail($section_id);
-        $fields = $section->fields()->latest()->paginate(10);
+        $fields = $section->fields()->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.page_section_fields.index', compact('section', 'fields'));
     }

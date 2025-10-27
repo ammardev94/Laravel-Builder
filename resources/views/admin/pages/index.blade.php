@@ -17,7 +17,6 @@
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Name</th>
               <th>Slug</th>
               <th>Status</th>
@@ -28,7 +27,6 @@
           <tbody>
             @foreach($pages as $page)
               <tr>
-                <td>{{ $page->id }}</td>
                 <td>{{ $page->name }}</td>
                 <td>{{ $page->slug }}</td>
                 <td>{!! $page->status ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>' !!}</td>

@@ -41,7 +41,6 @@
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Field Name</th>
               <th>Label</th>
               <th>Type</th>
@@ -52,7 +51,6 @@
           <tbody>
             @foreach($fields as $field)
               <tr>
-                <td>{{ $field->id }}</td>
                 <td>{{ $field->field_name }}</td>
                 <td>{{ $field->field_label }}</td>
                 <td><span class="badge bg-info">{{ ucfirst($field->field_type) }}</span></td>

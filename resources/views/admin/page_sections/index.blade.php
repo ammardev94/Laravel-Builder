@@ -38,7 +38,6 @@
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
-              <th>#</th>
               <th>Name</th>
               <th>Label</th>
               <th>Background Type</th>
@@ -50,7 +49,6 @@
           <tbody>
             @foreach($sections as $section)
               <tr>
-                <td>{{ $section->id }}</td>
                 <td>{{ $section->name }}</td>
                 <td>{{ $section->label }}</td>
                 <td>{{ ucfirst($section->background_type) }}</td>

@@ -28,7 +28,7 @@ class PageSection extends Model
 
     public function fields(): HasMany
     {
-        return $this->hasMany(PageSectionField::class)->orderBy('sort_order');
+        return $this->hasMany(PageSectionField::class);
     }
 
     public function field($name)
