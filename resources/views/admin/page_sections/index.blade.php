@@ -1,21 +1,40 @@
 @extends('admin.default')
 
 @section('content')
+
+<!-- Page Header -->
 <div class="content-header">
   <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="m-0">Sections — {{ $page->name }}</h1>
-      <a href="{{ route('admin.pages.sections.create', $page) }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i>
-      </a>
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Sections — {{ $page->name }}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{{ route('admin.pages.index') }}">Pages</a></li>
+          <li class="breadcrumb-item active">{{ $page->name }}</li>
+        </ol>
+      </div>
     </div>
+  </div>
+</div>
 
+<!-- Content -->
+<div class="content">
+  <div class="container-fluid">
     @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-
     <div class="card">
-      <div class="card-body">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="card-title mb-0">{{ $page->name }}</h3>
+          <a class="btn btn-primary" href="{{ route('admin.pages.sections.create', $page) }}">
+            <i class="fas fa-solid fa-plus"></i>
+          </a>
+        </div>
+      </div>
+      <div class="card-body p-0">
         <table class="table table-bordered table-striped">
           <thead>
             <tr>
@@ -53,12 +72,14 @@
             @endforeach
           </tbody>
         </table>
-
-        <div class="mt-3">
-          {{ $sections->links() }}
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-end">
+          {{ $sections->appends(request()->query())->links('vendor.pagination.bootstrap-4') }}
         </div>
       </div>
     </div>
   </div>
 </div>
+
 @endsection
